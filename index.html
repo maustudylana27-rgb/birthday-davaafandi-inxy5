@@ -14,15 +14,17 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <style>
         :root {
-            --primary: #3b82f6;
-            --primary-glow: rgba(59, 130, 246, 0.5);
-            --accent: #60a5fa;
-            --gold: #f59e0b;
-            --dark-bg: #0b1120;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --card-border: rgba(255, 255, 255, 0.1);
+            --primary: #60a5fa;
+            --primary-strong: #2563eb;
+            --accent: #fbbf24;
+            --pink: #f472b6;
+            --purple: #a78bfa;
+            --dark-bg: #07111f;
+            --bg-deep: #111827;
+            --card-bg: rgba(15, 23, 42, 0.72);
+            --card-border: rgba(255, 255, 255, 0.12);
             --text-main: #f8fafc;
-            --text-sub: #94a3b8;
+            --text-sub: #cbd5e1;
         }
 
         * {
@@ -31,9 +33,17 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--dark-bg);
+            background:
+                radial-gradient(circle at 15% 20%, rgba(96, 165, 250, 0.35), transparent 22%),
+                radial-gradient(circle at 80% 18%, rgba(244, 114, 182, 0.25), transparent 25%),
+                radial-gradient(circle at 50% 82%, rgba(251, 191, 36, 0.18), transparent 20%),
+                linear-gradient(135deg, #040b16 0%, #0b1220 26%, #111827 58%, #0f172a 100%);
             color: var(--text-main);
             min-height: 100vh;
             overflow-x: hidden;
@@ -41,178 +51,448 @@
             padding-bottom: 60px;
         }
 
-        /* Animated Background Gradients */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: -25% -15% auto auto;
+            width: 75vmax;
+            height: 75vmax;
+            background:
+                radial-gradient(circle at center, rgba(255,255,255,0.12), transparent 28%),
+                radial-gradient(circle at 30% 30%, rgba(96,165,250,0.16), transparent 35%),
+                radial-gradient(circle at 72% 68%, rgba(244,114,182,0.14), transparent 30%);
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: -3;
+            animation: driftGlow 22s linear infinite alternate;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.08) 0 1px, transparent 1.5px) 0 0 / 28px 28px,
+                radial-gradient(circle at 70% 60%, rgba(255,255,255,0.06) 0 1px, transparent 1.5px) 0 0 / 32px 32px,
+                linear-gradient(rgba(255,255,255,0.02), rgba(255,255,255,0.02)),
+                radial-gradient(circle at center, transparent 0%, rgba(3, 7, 18, 0.28) 62%, rgba(2, 6, 23, 0.64) 100%);
+            opacity: 0.8;
+            pointer-events: none;
+            z-index: -2;
+        }
+
         .bg-glow {
             position: fixed;
             border-radius: 50%;
-            filter: blur(120px);
+            filter: blur(110px);
             z-index: -1;
-            opacity: 0.45;
-            animation: pulseGlow 8s infinite alternate ease-in-out;
+            opacity: 0.75;
+            animation: pulseGlow 9s infinite alternate ease-in-out;
         }
 
         .glow-1 {
-            top: -10%;
-            left: -10%;
-            width: 50vw;
-            height: 50vw;
-            background: radial-gradient(circle, #1e3a8a, #0284c7);
+            top: -6%;
+            left: -4%;
+            width: 36vw;
+            height: 36vw;
+            background: radial-gradient(circle, rgba(96,165,250,0.9), rgba(96,165,250,0.1));
         }
 
         .glow-2 {
             bottom: -10%;
-            right: -10%;
-            width: 55vw;
-            height: 55vw;
-            background: radial-gradient(circle, #2563eb, #4f46e5);
-            animation-delay: -4s;
+            right: -8%;
+            width: 40vw;
+            height: 40vw;
+            background: radial-gradient(circle, rgba(244,114,182,0.9), rgba(167,139,250,0.14));
+            animation-delay: -4.5s;
         }
 
         .glow-3 {
-            top: 40%;
-            left: 30%;
-            width: 40vw;
-            height: 40vw;
-            background: radial-gradient(circle, #0f766e, #1e40af);
-            opacity: 0.25;
+            top: 34%;
+            left: 34%;
+            width: 28vw;
+            height: 28vw;
+            background: radial-gradient(circle, rgba(251,191,36,0.8), rgba(59,130,246,0.08));
+            opacity: 0.48;
         }
 
         @keyframes pulseGlow {
             0% { transform: scale(1) translate(0, 0); }
-            100% { transform: scale(1.15) translate(20px, -20px); }
+            100% { transform: scale(1.2) translate(28px, -18px); }
+        }
+
+        @keyframes driftGlow {
+            0% { transform: translate3d(0, 0, 0) scale(1); }
+            100% { transform: translate3d(60px, -30px, 0) scale(1.12); }
+        }
+
+        @keyframes floatY {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-16px) rotate(6deg); }
+        }
+
+        @keyframes sway {
+            0%, 100% { transform: rotate(0deg) translateX(0); }
+            50% { transform: rotate(8deg) translateX(8px); }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.9); }
+            50% { opacity: 1; transform: scale(1.35); }
+        }
+
+        .floating-icons {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .float-item {
+            position: absolute;
+            width: 56px;
+            height: 56px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            font-size: 1.35rem;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 14px 30px rgba(15, 23, 42, 0.28);
+            animation: floatY 6s ease-in-out infinite;
+        }
+
+        .float-item:nth-child(1) { top: 12%; left: 12%; animation-delay: 0s; }
+        .float-item:nth-child(2) { top: 18%; right: 14%; animation-delay: 1.5s; }
+        .float-item:nth-child(3) { bottom: 18%; left: 18%; animation-delay: 0.7s; }
+        .float-item:nth-child(4) { bottom: 14%; right: 20%; animation-delay: 2.1s; }
+
+        .sparkles {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+            animation: twinkle 3s ease-in-out infinite;
         }
 
         .container {
-            max-width: 950px;
+            max-width: 980px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 40px 20px 20px;
         }
 
-        /* Header Section */
         header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 32px;
             position: relative;
         }
 
         .badge {
-            display: inline-block;
-            background: rgba(59, 130, 246, 0.15);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            color: var(--accent);
-            padding: 8px 18px;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(96, 165, 250, 0.14);
+            border: 1px solid rgba(96, 165, 250, 0.26);
+            color: #dbeafe;
+            padding: 9px 18px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             backdrop-filter: blur(10px);
+            box-shadow: 0 10px 28px rgba(37,99,235,0.12);
         }
 
         h1.main-title {
             font-family: 'Outfit', sans-serif;
-            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-size: clamp(2.4rem, 5vw, 4rem);
             font-weight: 800;
-            background: linear-gradient(135deg, #ffffff 30%, #93c5fd 100%);
+            background: linear-gradient(135deg, #ffffff 20%, #bfdbfe 50%, #f9d77f 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            line-height: 1.2;
+            line-height: 1.1;
             margin-bottom: 15px;
-            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 12px 28px rgba(0,0,0,0.45);
+            letter-spacing: -0.04em;
         }
 
         header p.subtitle {
-            font-size: 1.1rem;
+            font-size: 1.08rem;
             color: var(--text-sub);
-            max-width: 600px;
+            max-width: 650px;
             margin: 0 auto;
+            line-height: 1.7;
         }
 
-        /* Countdown Timer */
+        .music-toggle {
+            margin-top: 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: none;
+            border-radius: 999px;
+            padding: 11px 18px;
+            background: linear-gradient(135deg, rgba(251,191,36,0.22), rgba(244,114,182,0.25));
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 16px 28px rgba(251, 191, 36, 0.18);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .music-toggle:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 18px 30px rgba(244, 114, 182, 0.24);
+        }
+
+        .music-card {
+            position: fixed;
+            right: 22px;
+            top: 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 14px;
+            border-radius: 20px;
+            background: rgba(15, 23, 42, 0.62);
+            border: 1px solid rgba(255,255,255,0.09);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 16px 36px rgba(15, 23, 42, 0.28);
+            z-index: 10;
+        }
+
+        .music-art {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: grid;
+            place-items: center;
+            font-size: 1.3rem;
+            color: white;
+            background: linear-gradient(135deg, rgba(96,165,250,0.9), rgba(244,114,182,0.82));
+            box-shadow: 0 12px 28px rgba(96,165,250,0.2);
+            animation: pulseGlow 4.5s ease-in-out infinite alternate;
+        }
+
+        .music-info {
+            min-width: 0;
+        }
+
+        .music-kicker {
+            display: block;
+            font-size: 0.64rem;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: #cbd5e1;
+            margin-bottom: 3px;
+        }
+
+        .music-info h2 {
+            font-size: 1.05rem;
+            margin: 0;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .music-info p {
+            margin: 0;
+            font-size: 0.73rem;
+            color: #cbd5e1;
+        }
+
+        .music-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-left: 6px;
+        }
+
+        .music-links a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            text-decoration: none;
+            color: white;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .music-links a:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255,255,255,0.18);
+        }
+
+        .watermark {
+            position: fixed;
+            left: 20px;
+            bottom: 18px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.42);
+            text-transform: lowercase;
+            z-index: 8;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .social-float {
+            position: fixed;
+            right: 20px;
+            bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 8;
+        }
+
+        .social-link {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            text-decoration: none;
+            color: white;
+            background: rgba(15, 23, 42, 0.46);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.22);
+            transition: transform 0.2s ease, background 0.2s ease;
+            backdrop-filter: blur(12px);
+        }
+
+        .social-link:hover {
+            transform: translateY(-2px) scale(1.04);
+            background: rgba(30, 41, 59, 0.7);
+        }
+
+        .social-link i {
+            font-size: 1.1rem;
+        }
+
+        .social-link.tiktok { background: rgba(25, 25, 25, 0.52); }
+        .social-link.instagram { background: linear-gradient(135deg, rgba(244,114,182,0.38), rgba(168,85,247,0.38)); }
+        .social-link.threads { background: rgba(17, 24, 39, 0.6); }
+        .social-link.x { background: rgba(15, 23, 42, 0.74); }
+
         .countdown-container {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             backdrop-filter: blur(16px);
-            border-radius: 24px;
-            padding: 25px;
-            margin-bottom: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-radius: 26px;
+            padding: 26px 20px 22px;
+            margin-bottom: 38px;
+            box-shadow: 0 24px 40px rgba(0, 0, 0, 0.22);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .countdown-container::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.08), transparent);
+            transform: translateX(-100%);
+            animation: shine 5s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            35%, 100% { transform: translateX(100%); }
         }
 
         .countdown-title {
             font-size: 0.9rem;
             color: var(--text-sub);
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 15px;
+            letter-spacing: 1.8px;
+            margin-bottom: 18px;
             text-align: center;
+            font-weight: 700;
         }
 
         .countdown {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
+            gap: 14px;
         }
 
         .time-box {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 15px 10px;
-            border-radius: 16px;
+            background: rgba(7, 17, 31, 0.7);
+            border: 1px solid rgba(255,255,255,0.06);
+            padding: 18px 10px 12px;
+            border-radius: 18px;
             text-align: center;
-            transition: transform 0.3s ease;
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
         .time-box:hover {
-            transform: translateY(-3px);
-            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateY(-4px);
+            border-color: rgba(96, 165, 250, 0.5);
+            box-shadow: 0 16px 24px rgba(59,130,246,0.2);
         }
 
         .time-box span {
             display: block;
             font-family: 'Outfit', sans-serif;
-            font-size: clamp(1.8rem, 4vw, 2.8rem);
-            font-weight: 700;
-            color: #60a5fa;
+            font-size: clamp(1.9rem, 4vw, 2.9rem);
+            font-weight: 800;
+            color: #7dd3fc;
             line-height: 1;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
+            text-shadow: 0 0 18px rgba(125,211,252,0.65);
         }
 
         .time-box label {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: var(--text-sub);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
+            font-weight: 700;
         }
 
-        /* Birthday Wishes Card */
         .wishes-card {
-            background: var(--card-bg);
+            background: linear-gradient(180deg, rgba(17,24,39,0.82), rgba(15,23,42,0.72));
             border: 1px solid var(--card-border);
             backdrop-filter: blur(16px);
-            border-radius: 24px;
-            padding: 30px;
+            border-radius: 26px;
+            padding: 30px 28px;
             margin-bottom: 40px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 24px 40px rgba(0,0,0,0.18);
         }
 
         .wishes-card::before {
-            content: '';
+            content: "";
             position: absolute;
-            top: 0;
-            left: 0;
+            inset: 0 auto 0 0;
             width: 4px;
-            height: 100%;
-            background: linear-gradient(to bottom, #3b82f6, #60a5fa);
+            background: linear-gradient(180deg, var(--primary), var(--pink), var(--accent));
         }
 
         .wishes-card h3 {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.5rem;
-            color: #f59e0b;
+            font-size: 1.6rem;
+            color: #fcd34d;
             margin-bottom: 12px;
             display: flex;
             align-items: center;
@@ -220,45 +500,89 @@
         }
 
         .wishes-card p {
-            color: #cbd5e1;
-            line-height: 1.7;
-            font-size: 1.05rem;
+            color: #dfeafc;
+            line-height: 1.8;
+            font-size: 1.04rem;
         }
 
-        /* Celebrate Button Area */
         .celebrate-area {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 54px;
+        }
+
+        .surprise-box {
+            background: linear-gradient(180deg, rgba(17,24,39,0.82), rgba(15,23,42,0.72));
+            border: 1px solid var(--card-border);
+            border-radius: 26px;
+            padding: 26px 22px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.18);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .surprise-box::before {
+            content: "";
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 5px;
+            background: linear-gradient(180deg, var(--accent), var(--pink), var(--primary));
+        }
+
+        .surprise-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .surprise-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(1.5rem, 2.8vw, 2rem);
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .surprise-note {
+            display: none;
+            margin-top: 18px;
+            color: #e2e8f0;
+            line-height: 1.8;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 18px 16px;
         }
 
         .btn-celebrate {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            background: linear-gradient(135deg, #2563eb, #7c3aed, #ec4899);
             border: none;
             color: white;
             padding: 16px 36px;
-            font-size: 1.1rem;
-            font-weight: 700;
-            border-radius: 50px;
+            font-size: 1.08rem;
+            font-weight: 800;
+            border-radius: 999px;
             cursor: pointer;
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
-            transition: all 0.3s ease;
+            box-shadow: 0 18px 32px rgba(124,58,237,0.28);
+            transition: all 0.25s ease;
             display: inline-flex;
             align-items: center;
             gap: 12px;
+            letter-spacing: 0.03em;
         }
 
         .btn-celebrate:hover {
-            transform: translateY(-3px) scale(1.02);
-            box-shadow: 0 15px 30px rgba(37, 99, 235, 0.6);
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 22px 36px rgba(59,130,246,0.35);
         }
 
-        /* Section Titles */
         .section-title {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 25px;
+            font-size: clamp(1.7rem, 2.8vw, 2.1rem);
+            font-weight: 800;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -266,67 +590,68 @@
         }
 
         .section-title i {
-            color: var(--primary);
+            color: var(--accent);
+            text-shadow: 0 0 18px rgba(251,191,36,0.65);
         }
 
-        /* Gallery Grid */
         .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
             gap: 20px;
             margin-bottom: 50px;
         }
 
         .photo-card {
-            background: var(--card-bg);
+            background: rgba(15, 23, 42, 0.78);
             border: 1px solid var(--card-border);
             backdrop-filter: blur(12px);
-            border-radius: 20px;
+            border-radius: 22px;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.35s ease;
+            box-shadow: 0 10px 22px rgba(0,0,0,0.14);
         }
 
         .photo-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(59, 130, 246, 0.5);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            transform: translateY(-10px) rotate(-0.4deg);
+            border-color: rgba(96, 165, 250, 0.5);
+            box-shadow: 0 18px 30px rgba(14, 116, 144, 0.22);
         }
 
         .photo-card .img-wrapper {
             width: 100%;
-            height: 220px;
+            height: 240px;
             overflow: hidden;
             position: relative;
-            background: #1e293b;
+            background: linear-gradient(135deg, rgba(96,165,250,0.2), rgba(244,114,182,0.15));
         }
 
         .photo-card img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s ease;
+            transition: transform 0.55s ease;
+            filter: saturate(1.05) contrast(1.04);
         }
 
         .photo-card:hover img {
-            transform: scale(1.08);
+            transform: scale(1.1);
         }
 
         .photo-card .caption {
-            padding: 15px;
-            font-size: 0.95rem;
+            padding: 14px 16px 16px;
+            font-size: 0.93rem;
             color: var(--text-sub);
             text-align: center;
-            font-weight: 500;
+            font-weight: 600;
         }
 
-        /* Guestbook & Wishes Section */
         .guestbook-section {
-            background: var(--card-bg);
+            background: linear-gradient(180deg, rgba(15,23,42,0.82), rgba(17,24,39,0.8));
             border: 1px solid var(--card-border);
             backdrop-filter: blur(16px);
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-radius: 26px;
+            padding: 30px 24px;
+            box-shadow: 0 24px 40px rgba(0,0,0,0.18);
         }
 
         .comment-form {
@@ -334,76 +659,78 @@
             flex-direction: column;
             gap: 15px;
             margin-bottom: 35px;
-            background: rgba(15, 23, 42, 0.4);
+            background: rgba(15, 23, 42, 0.55);
             padding: 20px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 7px;
             text-align: left;
         }
 
         .form-group label {
-            font-size: 0.85rem;
+            font-size: 0.86rem;
             color: var(--text-sub);
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .input-field, .textarea-field {
             width: 100%;
-            padding: 12px 16px;
+            padding: 12px 14px;
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(2, 6, 23, 0.7);
             color: #ffffff;
             font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
         }
 
         .input-field:focus, .textarea-field:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            border-color: rgba(96,165,250,0.75);
+            box-shadow: 0 0 0 3px rgba(96,165,250,0.16);
+            transform: translateY(-1px);
         }
 
         .btn-submit {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary-strong), var(--primary));
             color: white;
-            font-weight: 600;
+            font-weight: 700;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 22px;
             border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
             align-self: flex-start;
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            box-shadow: 0 14px 26px rgba(37, 99, 235, 0.18);
         }
 
         .btn-submit:hover {
-            background: #2563eb;
+            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
             transform: translateY(-2px);
         }
 
-        /* Comment List */
         .comments-list {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 18px;
         }
 
         .comment-card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(15, 23, 42, 0.58);
+            border: 1px solid rgba(255,255,255,0.05);
             border-left: 4px solid var(--primary);
             padding: 20px;
             border-radius: 16px;
             text-align: left;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.08);
         }
 
         .comment-header {
@@ -411,6 +738,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
+            gap: 10px;
         }
 
         .comment-author {
@@ -428,19 +756,19 @@
         }
 
         .comment-body {
-            color: #cbd5e1;
-            font-size: 0.95rem;
-            line-height: 1.6;
+            color: #dce7f7;
+            font-size: 0.96rem;
+            line-height: 1.7;
             margin-bottom: 12px;
         }
 
         .reply-btn {
             background: transparent;
             border: none;
-            color: var(--accent);
+            color: #93c5fd;
             cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
+            font-size: 0.84rem;
+            font-weight: 700;
             display: inline-flex;
             align-items: center;
             gap: 6px;
@@ -449,82 +777,154 @@
         }
 
         .reply-btn:hover {
-            color: #93c5fd;
+            color: #dbeafe;
         }
 
-        /* Replies */
         .replies-list {
             margin-top: 15px;
             padding-left: 15px;
-            border-left: 2px solid rgba(255, 255, 255, 0.1);
+            border-left: 2px solid rgba(255,255,255,0.08);
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
 
         .reply-card {
-            background: rgba(30, 41, 59, 0.5);
+            background: rgba(30, 41, 59, 0.6);
             padding: 12px 15px;
             border-radius: 12px;
-            border-left: 3px solid #f59e0b;
+            border-left: 3px solid #fbbf24;
         }
 
         .reply-author {
             font-weight: 700;
-            color: #f59e0b;
+            color: #fcd34d;
             font-size: 0.85rem;
             margin-bottom: 4px;
         }
 
         .reply-body {
-            color: #e2e8f0;
+            color: #edf6ff;
             font-size: 0.9rem;
+            line-height: 1.5;
         }
 
         .reply-form {
             display: none;
             margin-top: 15px;
             padding: 15px;
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(2, 6, 23, 0.7);
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255,255,255,0.08);
         }
 
         footer {
             text-align: center;
-            margin-top: 60px;
+            margin-top: 56px;
             color: var(--text-sub);
             font-size: 0.85rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            padding-top: 25px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding-top: 26px;
+        }
+
+        @media (max-width: 768px) {
+            .music-card {
+                position: static;
+                margin: 10px auto 20px;
+                width: min(100%, 500px);
+                justify-content: center;
+            }
+
+            .music-links {
+                justify-content: center;
+                margin-left: 0;
+            }
         }
 
         @media (max-width: 600px) {
             .countdown {
                 gap: 8px;
             }
+
             .time-box {
-                padding: 10px 5px;
+                padding: 12px 5px 10px;
             }
+
             .wishes-card, .guestbook-section {
-                padding: 20px;
+                padding: 20px 18px;
+            }
+
+            .float-item {
+                width: 42px;
+                height: 42px;
+                font-size: 1.1rem;
+            }
+
+            .music-card {
+                padding: 10px 12px;
+                gap: 10px;
+                flex-wrap: wrap;
             }
         }
     </style>
 </head>
 <body>
 
-    <!-- Background Animated Elements -->
+    <audio id="birthdayMusic" loop preload="auto" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
+
     <div class="bg-glow glow-1"></div>
     <div class="bg-glow glow-2"></div>
     <div class="bg-glow glow-3"></div>
 
+    <div class="music-card" aria-live="polite">
+        <div class="music-art">
+            <i class="fa-solid fa-music"></i>
+        </div>
+        <div class="music-info">
+            <span class="music-kicker">Now Playing</span>
+            <h2>Daylight</h2>
+            <p>Taylor Swift</p>
+        </div>
+        <div class="music-links">
+            <a href="https://open.spotify.com/track/1z6WtY7X4HQJvzxC4UgkSf" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-spotify"></i> Spotify</a>
+            <a href="https://www.youtube.com/results?search_query=Taylor+Swift+Daylight+official+audio" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-youtube"></i> YouTube</a>
+        </div>
+    </div>
+
+    <div class="floating-icons" aria-hidden="true">
+        <div class="float-item"><i class="fa-solid fa-cake-candles"></i></div>
+        <div class="float-item"><i class="fa-solid fa-star"></i></div>
+        <div class="float-item"><i class="fa-solid fa-gift"></i></div>
+        <div class="float-item"><i class="fa-solid fa-heart"></i></div>
+    </div>
+
+    <div class="sparkles" aria-hidden="true">
+        <span class="sparkle" style="top: 12%; left: 18%;"></span>
+        <span class="sparkle" style="top: 28%; left: 78%; animation-delay: 0.8s;"></span>
+        <span class="sparkle" style="top: 42%; left: 58%; animation-delay: 1.5s;"></span>
+        <span class="sparkle" style="top: 66%; left: 28%; animation-delay: 2.1s;"></span>
+        <span class="sparkle" style="top: 78%; left: 76%; animation-delay: 0.5s;"></span>
+        <span class="sparkle" style="top: 16%; left: 48%; animation-delay: 2.8s;"></span>
+    </div>
+
+    <div class="social-float" aria-label="Sosial media">
+        <a class="social-link tiktok" href="https://tiktok.com/@inxy5" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+        <a class="social-link instagram" href="https://instagram.com/inxy.5" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+        <a class="social-link threads" href="https://threads.com/inxy.5" target="_blank" rel="noopener noreferrer" aria-label="Threads"><i class="fa-brands fa-threads"></i></a>
+        <a class="social-link x" href="https://x.com/inxy5" target="_blank" rel="noopener noreferrer" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+    </div>
+
+    <div class="watermark">@inxy5</div>
+
     <div class="container">
-        <!-- Header -->
         <header>
             <span class="badge"><i class="fa-solid fa-cake-candles"></i> Sweet 16 Celebration</span>
             <h1 class="main-title">Dava Maulana Afandi Ahmad</h1>
             <p class="subtitle">Memasuki babak baru usia 16 tahun dengan penuh semangat, impian, dan keberkahan.</p>
+            <button class="music-toggle" id="musicToggle" type="button">
+                <i class="fa-solid fa-music"></i>
+                <span>Putar Lagu</span>
+            </button>
         </header>
 
         <!-- Countdown Timer -->
@@ -551,30 +951,42 @@
             </button>
         </div>
 
+        <div class="surprise-box">
+            <div class="surprise-header">
+                <h2 class="surprise-title"><i class="fa-solid fa-gift"></i> Pesan Rahasia</h2>
+                <button class="btn-celebrate" style="padding: 12px 20px; font-size: 0.95rem;" onclick="toggleSurpriseNote()">
+                    <i class="fa-solid fa-envelope-open-text"></i> Buka Pesan
+                </button>
+            </div>
+            <div class="surprise-note" id="surpriseNote">
+                Selamat ulang tahun, Dava! Semoga kamu selalu diberi kesehatan, kebahagiaan, dan keberanian untuk terus melangkah maju. Jadilah diri sendiri, tetap rendah hati, dan jangan pernah takut untuk bermimpi besar. Waktu akan membuktikan semua usaha kamu, dan orang-orang di sekitarmu akan bangga melihat perkembanganmu. Happy 16th, you deserve all the beautiful things in life.
+            </div>
+        </div>
+
         <!-- Gallery Grid -->
         <h2 class="section-title"><i class="fa-solid fa-images"></i> Galeri Kenangan</h2>
         <div class="gallery">
             <div class="photo-card">
                 <div class="img-wrapper">
-                    <img src="foto1.jpeg" alt="Foto 1" onerror="this.src='https://share.google/4kS8JEkUcXxMV9X2T'">
+                    <img src="foto1.jpeg" alt="Foto 1" onerror="this.src='https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=80'">
                 </div>
                 <div class="caption">Momen Istimewa 1</div>
             </div>
             <div class="photo-card">
                 <div class="img-wrapper">
-                    <img src="foto2.jpeg" alt="Foto 2" onerror="this.src='https://share.google/OLMR69hAnSulq81V6'">
+                    <img src="foto2.jpeg" alt="Foto 2" onerror="this.src='https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=900&q=80'">
                 </div>
                 <div class="caption">Momen Istimewa 2</div>
             </div>
             <div class="photo-card">
                 <div class="img-wrapper">
-                    <img src="foto3.jpeg" alt="Foto 3" onerror="this.src='https://share.google/z5edAtDt58Q6Fqlt9'">
+                    <img src="foto3.jpeg" alt="Foto 3" onerror="this.src='https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=900&q=80'">
                 </div>
                 <div class="caption">Momen Istimewa 3</div>
             </div>
             <div class="photo-card">
                 <div class="img-wrapper">
-                    <img src="foto4.jpeg" alt="Foto 4" onerror="this.src='https://share.google/YOZyWYCZKCTL11IGK'">
+                    <img src="foto4.jpeg" alt="Foto 4" onerror="this.src='https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80'">
                 </div>
                 <div class="caption">Momen Istimewa 4</div>
             </div>
@@ -592,7 +1004,7 @@
                 </div>
                 <div class="form-group">
                     <label for="senderMessage">Pesan Ucapan / Doa</label>
-                    <textarea id="senderMessage" class="textarea-field" rows="3" placeholder="Tuliskan harapan dan ucapan ulang tahun untuk Dava..." required></textarea>
+                    <textarea id="senderMessage" class="textarea-field" rows="3" placeholder="Tuliskan harapan dan ucapan ulang tahun untuk ku..." required></textarea>
                 </div>
                 <button class="btn-submit" onclick="addComment()">
                     <i class="fa-solid fa-paper-plane"></i> Kirim Ucapan
@@ -606,11 +1018,49 @@
         </div>
 
         <footer>
-            <p>Spesial Ulang Tahun Ke-16 Dava Maulana Afandi Ahmad • 27 September</p>
+            <p>Spesial Ulang Tahun Ke-16 Dava Maulana Afandi Ahmad • 27 September 2026</p>
         </footer>
     </div>
 
     <script>
+        // --- Public Storage Setup ---
+        // localStorage hanya bisa dibaca di browser yang sama. Untuk bisa dilihat publik,
+        // halaman ini perlu disimpan di hosting online dan data ucapan disimpan di backend seperti
+        // Firebase, Supabase, atau Google Apps Script. Jika API publik belum diisi,
+        // sistem akan tetap memakai localStorage sebagai fallback lokal.
+        const STORAGE_KEY = 'dava_birthday_comments';
+        const PUBLIC_GUESTBOOK_API = 'http://localhost:3000/comments';
+
+        async function loadCommentsFromPublicAPI() {
+            if (!PUBLIC_GUESTBOOK_API) return null;
+
+            try {
+                const response = await fetch(PUBLIC_GUESTBOOK_API);
+                if (!response.ok) throw new Error('Gagal memuat data publik');
+                const data = await response.json();
+                if (Array.isArray(data)) return data;
+                if (data && Array.isArray(data.comments)) return data.comments;
+            } catch (error) {
+                console.warn('Tidak bisa membaca data publik, fallback ke localStorage:', error);
+            }
+
+            return null;
+        }
+
+        async function saveCommentsToPublicAPI(commentsList) {
+            if (!PUBLIC_GUESTBOOK_API) return;
+
+            try {
+                await fetch(PUBLIC_GUESTBOOK_API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ comments: commentsList })
+                });
+            } catch (error) {
+                console.warn('Gagal menyimpan ke API publik, tetap pakai lokal:', error);
+            }
+        }
+
         // --- Countdown Logic ---
         const targetDate = new Date();
         targetDate.setMonth(8); // September (0-indexed)
@@ -651,24 +1101,70 @@
         // --- Confetti Animation ---
         function launchConfetti() {
             confetti({
-                particleCount: 120,
-                spread: 80,
-                origin: { y: 0.6 }
+                particleCount: 160,
+                spread: 90,
+                origin: { y: 0.6 },
+                colors: ['#60a5fa', '#fbbf24', '#f472b6', '#a78bfa', '#34d399', '#f87171']
             });
         }
 
-        // --- LocalStorage Guestbook & Reply Logic ---
-        let comments = JSON.parse(localStorage.getItem('dava_birthday_comments')) || [
+        function toggleSurpriseNote() {
+            const note = document.getElementById('surpriseNote');
+            const isVisible = note.style.display === 'block';
+            note.style.display = isVisible ? 'none' : 'block';
+            if (!isVisible) {
+                launchConfetti();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                launchConfetti();
+            }, 400);
+        });
+
+        const musicToggle = document.getElementById('musicToggle');
+        const birthdayMusic = document.getElementById('birthdayMusic');
+
+        musicToggle.addEventListener('click', async () => {
+            if (birthdayMusic.paused) {
+                try {
+                    await birthdayMusic.play();
+                    musicToggle.innerHTML = '<i class="fa-solid fa-volume-high"></i><span>Musik Aktif</span>';
+                } catch (error) {
+                    console.warn('Musik diblokir browser sampai interaksi pengguna selesai:', error);
+                }
+            } else {
+                birthdayMusic.pause();
+                musicToggle.innerHTML = '<i class="fa-solid fa-music"></i><span>Putar Lagu</span>';
+            }
+        });
+
+        // --- LocalStorage / Public Guestbook & Reply Logic ---
+        const defaultComments = [
             {
                 id: 1,
-                name: "Keluarga / Sahabat",
+                name: "Trisha JKT48.",
                 message: "Selamat ulang tahun yang ke-16 untuk Dava Maulana Afandi Ahmad! Semoga makin sukses, berbakti, dan tercapai semua cita-cita maupun wishlistnya!",
                 date: "27 Sep 2026",
                 replies: [
-                    { name: "Dava", message: "Aamiin big thanks atas ucapan dan doanya!", date: "27 Sep" }
+                    { name: "Dava", message: "Aamiin, big thanks for your word and prayers!", date: "27 Sep" }
                 ]
             }
         ];
+
+        let comments = defaultComments;
+
+        async function initializeComments() {
+            const publicComments = await loadCommentsFromPublicAPI();
+            if (publicComments && publicComments.length) {
+                comments = publicComments;
+            } else {
+                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                comments = Array.isArray(saved) && saved.length ? saved : defaultComments;
+            }
+            renderComments();
+        }
 
         function renderComments() {
             const commentsContainer = document.getElementById('commentsList');
@@ -734,8 +1230,9 @@
             };
 
             comments.unshift(newComment);
-            localStorage.setItem('dava_birthday_comments', JSON.stringify(comments));
-            
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(comments));
+            saveCommentsToPublicAPI(comments);
+
             nameInput.value = '';
             messageInput.value = '';
             renderComments();
@@ -762,11 +1259,12 @@
                 date: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
             });
 
-            localStorage.setItem('dava_birthday_comments', JSON.stringify(comments));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(comments));
+            saveCommentsToPublicAPI(comments);
             renderComments();
         }
 
-        renderComments();
+        initializeComments();
     </script>
 </body>
 </html>
