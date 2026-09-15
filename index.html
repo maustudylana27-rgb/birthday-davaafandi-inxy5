@@ -185,6 +185,39 @@
             animation: twinkle 3s ease-in-out infinite;
         }
 
+        #fireworksCanvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 20;
+            mix-blend-mode: screen;
+        }
+
+        .gesture-hint {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%);
+            z-index: 21;
+            padding: 9px 15px;
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 999px;
+            color: rgba(255,255,255,0.78);
+            background: rgba(4, 11, 22, 0.5);
+            backdrop-filter: blur(12px);
+            font-size: 0.73rem;
+            letter-spacing: 0.03em;
+            pointer-events: none;
+            animation: hintFade 7s 1.5s forwards;
+        }
+
+        @keyframes hintFade {
+            0%, 65% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
         .container {
             max-width: 980px;
             margin: 0 auto;
@@ -870,6 +903,9 @@
 </head>
 <body>
 
+    <canvas id="fireworksCanvas" aria-hidden="true"></canvas>
+    <div class="gesture-hint">Tap atau geser layar untuk menyalakan kembang api</div>
+
     <audio id="birthdayMusic" loop preload="auto" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
 
     <div class="bg-glow glow-1"></div>
@@ -886,7 +922,7 @@
             <p>Taylor Swift</p>
         </div>
         <div class="music-links">
-            <a href="https://open.spotify.com/track/1z6WtY7X4HQJvzxC4UgkSf" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-spotify"></i> Spotify</a>
+            <a href="https://open.spotify.com/track/1fzAuUVbzlhZ1lJAx9PtY6?si=10fea02c42194b77" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-spotify"></i> Spotify</a>
             <a href="https://www.youtube.com/results?search_query=Taylor+Swift+Daylight+official+audio" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-youtube"></i> YouTube</a>
         </div>
     </div>
@@ -959,7 +995,8 @@
                 </button>
             </div>
             <div class="surprise-note" id="surpriseNote">
-                Selamat ulang tahun, Dava! Semoga kamu selalu diberi kesehatan, kebahagiaan, dan keberanian untuk terus melangkah maju. Jadilah diri sendiri, tetap rendah hati, dan jangan pernah takut untuk bermimpi besar. Waktu akan membuktikan semua usaha kamu, dan orang-orang di sekitarmu akan bangga melihat perkembanganmu. Happy 16th, you deserve all the beautiful things in life.
+                cieee kepo ya lu pada🤣
+                . Happy 16th, you deserve all the beautiful things in life.
             </div>
         </div>
 
@@ -1098,15 +1135,156 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // --- Confetti Animation ---
-        function launchConfetti() {
+        // --- Interactive Fireworks ---
+        const fireworksCanvas = document.getElementById('fireworksCanvas');
+        const fireworksContext = fireworksCanvas.getContext('2d');
+        const fireworkColors = ['#7dd3fc', '#fcd34d', '#f9a8d4', '#c4b5fd', '#86efac', '#fb7185'];
+        let fireworks = [];
+        let sparks = [];
+        let fireworkFrame;
+        let gestureStart = null;
+        let lastGestureBurst = 0;
+
+        function resizeFireworksCanvas() {
+            const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+            fireworksCanvas.width = window.innerWidth * pixelRatio;
+            fireworksCanvas.height = window.innerHeight * pixelRatio;
+            fireworksCanvas.style.width = `${window.innerWidth}px`;
+            fireworksCanvas.style.height = `${window.innerHeight}px`;
+            fireworksContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        }
+
+        function createFirework(targetX = window.innerWidth * (0.2 + Math.random() * 0.6), targetY = window.innerHeight * (0.18 + Math.random() * 0.38)) {
+            const startX = window.innerWidth * (0.15 + Math.random() * 0.7);
+            const color = fireworkColors[Math.floor(Math.random() * fireworkColors.length)];
+            fireworks.push({ x: startX, y: window.innerHeight + 12, targetX, targetY, color, trail: [] });
+            startFireworkLoop();
+        }
+
+        function burstFirework(firework) {
+            const count = 105 + Math.floor(Math.random() * 45);
+            for (let index = 0; index < count; index += 1) {
+                const angle = (Math.PI * 2 * index) / count + (Math.random() - 0.5) * 0.18;
+                const speed = 2.2 + Math.random() * 4.8;
+                sparks.push({
+                    x: firework.x, y: firework.y,
+                    vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+                    life: 1, decay: 0.012 + Math.random() * 0.016,
+                    size: 1.4 + Math.random() * 2.8, color: firework.color,
+                    gravity: 0.035 + Math.random() * 0.025
+                });
+            }
+            for (let index = 0; index < 24; index += 1) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 0.8 + Math.random() * 2.2;
+                sparks.push({
+                    x: firework.x, y: firework.y,
+                    vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+                    life: 1, decay: 0.02 + Math.random() * 0.02,
+                    size: 0.8 + Math.random() * 1.4, color: '#ffffff',
+                    gravity: 0.01
+                });
+            }
+            sparks.push({ x: firework.x, y: firework.y, radius: 5, life: 1, decay: 0.018, color: firework.color, shockwave: true });
+            sparks.push({ x: firework.x, y: firework.y, radius: 2, life: 1, decay: 0.024, color: '#ffffff', shockwave: true });
+        }
+
+        function drawFireworks() {
+            fireworksContext.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            fireworks = fireworks.filter(firework => {
+                const dx = firework.targetX - firework.x;
+                const dy = firework.targetY - firework.y;
+                const distance = Math.hypot(dx, dy);
+                if (distance < 10) { burstFirework(firework); return false; }
+                firework.trail.push({ x: firework.x, y: firework.y });
+                if (firework.trail.length > 9) firework.trail.shift();
+                firework.x += dx * 0.045;
+                firework.y += dy * 0.045 - 1.4;
+                fireworksContext.beginPath();
+                fireworksContext.moveTo(firework.trail[0]?.x || firework.x, firework.trail[0]?.y || firework.y);
+                fireworksContext.lineTo(firework.x, firework.y);
+                fireworksContext.strokeStyle = firework.color;
+                fireworksContext.globalAlpha = 0.8;
+                fireworksContext.lineWidth = 2;
+                fireworksContext.stroke();
+                return true;
+            });
+
+            sparks = sparks.filter(spark => {
+                spark.life -= spark.decay;
+                if (spark.shockwave) {
+                    spark.radius += 3.2;
+                    spark.life -= spark.decay;
+                    fireworksContext.beginPath();
+                    fireworksContext.arc(spark.x, spark.y, spark.radius, 0, Math.PI * 2);
+                    fireworksContext.strokeStyle = spark.color;
+                    fireworksContext.globalAlpha = spark.life * 0.45;
+                    fireworksContext.lineWidth = 2;
+                    fireworksContext.stroke();
+                } else {
+                    spark.vy += spark.gravity;
+                    spark.x += spark.vx;
+                    spark.y += spark.vy;
+                    spark.vx *= 0.985;
+                    fireworksContext.beginPath();
+                    fireworksContext.arc(spark.x, spark.y, spark.size, 0, Math.PI * 2);
+                    fireworksContext.fillStyle = spark.color;
+                    fireworksContext.shadowBlur = 14;
+                    fireworksContext.shadowColor = spark.color;
+                    fireworksContext.globalAlpha = Math.max(spark.life, 0);
+                    fireworksContext.fill();
+                    fireworksContext.shadowBlur = 0;
+                }
+                return spark.life > 0;
+            });
+            fireworksContext.globalAlpha = 1;
+            if (fireworks.length || sparks.length) fireworkFrame = requestAnimationFrame(drawFireworks);
+            else { fireworksContext.clearRect(0, 0, window.innerWidth, window.innerHeight); fireworkFrame = null; }
+        }
+
+        function startFireworkLoop() {
+            if (!fireworkFrame) fireworkFrame = requestAnimationFrame(drawFireworks);
+        }
+
+        function launchConfetti(targetX, targetY) {
+            createFirework(targetX, targetY);
             confetti({
-                particleCount: 160,
-                spread: 90,
-                origin: { y: 0.6 },
-                colors: ['#60a5fa', '#fbbf24', '#f472b6', '#a78bfa', '#34d399', '#f87171']
+                particleCount: 90, spread: 80,
+                origin: { x: (targetX || window.innerWidth / 2) / window.innerWidth, y: (targetY || window.innerHeight * 0.55) / window.innerHeight },
+                colors: fireworkColors
             });
         }
+
+        window.addEventListener('resize', resizeFireworksCanvas);
+        resizeFireworksCanvas();
+        window.addEventListener('pointerdown', event => {
+            if (event.target.closest('button, a, input, textarea')) return;
+            gestureStart = { x: event.clientX, y: event.clientY, time: performance.now() };
+            createFirework(event.clientX, Math.max(90, event.clientY));
+        });
+        window.addEventListener('pointermove', event => {
+            if (!gestureStart || !event.buttons) return;
+            const now = performance.now();
+            if (now - lastGestureBurst > 90) {
+                createFirework(event.clientX, Math.max(90, event.clientY));
+                lastGestureBurst = now;
+            }
+        });
+        window.addEventListener('pointerup', event => {
+            if (!gestureStart) return;
+            const distance = Math.hypot(event.clientX - gestureStart.x, event.clientY - gestureStart.y);
+            const duration = performance.now() - gestureStart.time;
+            if (distance > 70 && duration < 700) {
+                const burstCount = Math.min(4, Math.max(2, Math.floor(distance / 100)));
+                for (let index = 0; index < burstCount; index += 1) {
+                    createFirework(
+                        gestureStart.x + (event.clientX - gestureStart.x) * (index + 1) / burstCount,
+                        Math.max(90, gestureStart.y + (event.clientY - gestureStart.y) * (index + 1) / burstCount)
+                    );
+                }
+            }
+            gestureStart = null;
+        });
 
         function toggleSurpriseNote() {
             const note = document.getElementById('surpriseNote');
